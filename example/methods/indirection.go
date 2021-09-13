@@ -7,7 +7,7 @@ func init() {
 
 	v := Vertex{99, 99}
 
-	// 参数是指针, 方法能为值v
+	// 接收者是指针, 方法能用值类型调用
 	// 由于 changeOrg 方法有一个指针接收者，为方便起见，Go 会将语句 v.changeOrg(5) 解释为 (&v).changeOrg(5)。
 	v.changeOrg()
 	// (&v).changeOrg()

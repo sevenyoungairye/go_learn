@@ -50,6 +50,9 @@ func (t *Date) UnmarshalJSON(data []byte) error {
 func (t Date) MarshalJSON() ([]byte, error) {
 	timeStr := t.String()
 	fmt.Println("日期...", timeStr)
+	if strings.Contains(timeStr, "0001-01-01") {
+		return []byte("null"), nil
+	}
 	formatted := fmt.Sprintf("\"%v\"", time.Time(t).Format(t.GetFmt()))
 	return []byte(formatted), nil
 }

@@ -23,6 +23,10 @@ type UserInfo struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 	// equals: id, crt_at, upd_at, del_at
 	//gorm.Model
+	CompanyId uint `json:"companyId"`
+	// 使用company_id作为外键
+	//Company Company `json:"company" gorm:"foreignKey:CompanyId"`
+	Company Company `json:"company" gorm:"references:ID"`
 }
 
 // TableName 表名, 实现tabNm方法

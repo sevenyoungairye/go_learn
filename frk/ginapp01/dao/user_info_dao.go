@@ -27,7 +27,8 @@ func UpdateUser(u model.UserInfo) {
 func QueryUserList() []model.UserInfo {
 	// 声明切片
 	var userList []model.UserInfo
-	res := db.Find(&userList)
+	// preload启用预加载模式, 会把结果带出来.
+	res := db.Preload("Company").Find(&userList)
 	fmt.Println("查询到结果: ", *res)
 	/*res.Scan(&userList)
 	fmt.Println("用户列表, ", userList)*/

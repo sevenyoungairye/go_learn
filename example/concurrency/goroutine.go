@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"runtime"
+	"time"
 )
 
 func init() {}
@@ -18,8 +18,7 @@ func main() {
 
 func say(s string) {
 	for i := 0; i < 5; i++ {
-		// 让其它线程先跑
-		runtime.Gosched()
-		fmt.Println(s + "\t")
+		time.Sleep(100 * time.Millisecond)
+		fmt.Println(s+"\t", i)
 	}
 }

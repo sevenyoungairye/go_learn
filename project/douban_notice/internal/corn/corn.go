@@ -21,14 +21,14 @@ func Demo() {
 
 func init() {
 	c := cron.New()
-	id, err := c.AddFunc("50 21 * * *", func() {
+	id, err := c.AddFunc("20 22 * * *", func() {
 		ctx := mongodb.GetCtxCollection(mongodbRepo.MovieInfoCollect)
 		service := movie.New(*ctx, *redisdb.New())
 		start := time.Now().UnixMilli()
 		logger.Info("抓取电影定时任务开始, ")
 		service.SaveLastMovie()
-		//service.SaveRmdMovie()
-		//service.SaveRankMovie()
+		service.SaveRmdMovie()
+		service.SaveRankMovie()
 		end := time.Now().UnixMilli()
 		logger.Info(fmt.Sprintf("抓取电影定时任务结束, 用时: %d秒", (end-start)/1000))
 

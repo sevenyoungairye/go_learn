@@ -21,7 +21,7 @@ func Demo() {
 
 func init() {
 	c := cron.New()
-	id, err := c.AddFunc("20 22 * * *", func() {
+	id, err := c.AddFunc("55 20 * * *", func() {
 		ctx := mongodb.GetCtxCollection(mongodbRepo.MovieInfoCollect)
 		service := movie.New(*ctx, *redisdb.New())
 		start := time.Now().UnixMilli()

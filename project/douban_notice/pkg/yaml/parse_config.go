@@ -41,6 +41,7 @@ type D struct {
 		Tv struct {
 			Url string `yaml:"url" json:"url"`
 		} `yaml:"tv" json:"tv"`
+		SubjectAbstractUrl string `yaml:"subjectAbstractUrl" json:"subjectAbstractUrl"`
 	} `yaml:"DouBan" json:"DouBan"`
 }
 
@@ -60,7 +61,9 @@ func GetDouBan() *D {
 	if strings.EqualFold(d.Tv.Url, "") {
 		d.Tv.Url = "https://movie.douban.com/j/search_subjects?type=tv&tag=%s&sort=%s&page_limit=%s&page_start=%s"
 	}
-	log.Println(d.Movie.Url)
+	if "" == d.SubjectAbstractUrl {
+		d.SubjectAbstractUrl = "https://movie.douban.com/j/subject_abstract?subject_id=%s"
+	}
 	return &retVal
 }
 

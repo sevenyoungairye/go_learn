@@ -26,6 +26,7 @@ DouBan:
   tag:
     movie: https://movie.douban.com/j/search_tags?type=movie
     tv: https://movie.douban.com/j/search_tags?type=tv
+  subjectAbstractUrl: https://movie.douban.com/j/subject_abstract?subject_id=%s
   movie:
     url: https://movie.douban.com/j/search_subjects?type=movie&tag=%s&sort=%s&page_limit=%s&page_start=%s
   tv:

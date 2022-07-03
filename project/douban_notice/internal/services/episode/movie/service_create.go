@@ -18,6 +18,7 @@ type InfoCreateVo struct {
 
 // RestSave 后台rest 接口保存数据用
 func (s *service) RestSave(param InfoCreateVo) {
+	allTag := s.getAllTag()
 	request := crawler.DouBanRequest{
 		Tag:       param.Tag,
 		Sort:      param.Sort,
@@ -26,8 +27,9 @@ func (s *service) RestSave(param InfoCreateVo) {
 	}
 	data := getMovieData(request.GetCustomMovie().Subjects)
 	for _, item := range data {
-		// todo 定时任务 根据标签名和标签类型获取 标签id...
-		item.MvTagInfo = request.Tag
+		item.TagType = episode.Movie
+		tag := s.getTag(allTag, request.Tag, item.TagType)
+		item.TagList = append(make([]mongodb.TagInfo, 0), tag)
 		item.SaveOrUpd(&s.mongoCtx)
 	}
 }
@@ -45,6 +47,7 @@ func (s *service) SaveLastMovie() {
 }
 
 func (s *service) saveMovie(flg int) {
+	allTag := s.getAllTag()
 	for pageNo := 1; pageNo <= episode.TotalPage; pageNo++ {
 		pageStart, pageLimit := episode.ComputePageData(pageNo)
 		request := crawler.DouBanRequest{
@@ -64,40 +67,58 @@ func (s *service) saveMovie(flg int) {
 			movie = request.GetRmdMovie()
 		}
 		for _, item := range getMovieData(movie.Subjects) {
+			item.TagType = episode.Movie
+			tag := s.getTag(allTag, request.Tag, item.TagType)
+			item.TagList = append(make([]mongodb.TagInfo, 0), tag)
 			item.SaveOrUpd(&s.mongoCtx)
 		}
 	}
 }
 
-func getMovieData(episodeList []crawler.Episode) []mongodb.MovieInfo {
-	data := make([]mongodb.MovieInfo, 0)
+func getMovieData(episodeList []crawler.Episode) []mongodb.EpisodeInfo {
+	data := make([]mongodb.EpisodeInfo, 0)
 	for _, item := range episodeList {
 		data = append(data, convert(item))
 	}
 	return data
 }
 
-func convert(item crawler.Episode) mongodb.MovieInfo {
-	return mongodb.MovieInfo{
-		Id:           db.GenID(),
-		MvTagId:      "",
-		MvTagInfo:    "",
-		DbId:         item.ID,
-		Title:        item.Title,
-		Url:          item.URL,
-		Cover:        item.Cover,
-		Rate:         item.Rate,
-		IsNew:        item.IsNew,
-		Playable:     item.Playable,
-		CoverX:       int(item.CoverX),
-		CoverY:       int(item.CoverY),
-		EpisodesInfo: item.EpisodesInfo,
-		PublicDate:   nil,
-		Torrent:      "",
-		DriverUrl:    "",
-		Created:      time.Now(),
-		Creator:      "system",
-		Updater:      "system",
-		UpdateTime:   time.Now(),
+func convert(item crawler.Episode) mongodb.EpisodeInfo {
+	sub := crawler.GetSubject(item.ID)
+	return mongodb.EpisodeInfo{
+		Id:               db.GenID(),
+		DbId:             item.ID,
+		Title:            item.Title,
+		Url:              item.URL,
+		Cover:            item.Cover,
+		Rate:             item.Rate,
+		IsNew:            item.IsNew,
+		Playable:         item.Playable,
+		CoverX:           int(item.CoverX),
+		CoverY:           int(item.CoverY),
+		EpisodesInfo:     item.EpisodesInfo,
+		PublicDate:       nil,
+		Torrent:          "",
+		DriverUrl:        "",
+		Created:          time.Now(),
+		Creator:          "system",
+		Updater:          "system",
+		UpdateTime:       time.Now(),
+		Actors:           sub.Actors,
+		Blacklisted:      sub.Blacklisted,
+		CollectionStatus: sub.CollectionStatus,
+		Directors:        sub.Directors,
+		Duration:         sub.Duration,
+		EpisodesCount:    sub.EpisodesCount,
+		IsTv:             sub.IsTv,
+		Region:           sub.Region,
+		ReleaseYear:      sub.ReleaseYear,
+		Star:             sub.Star,
+		Subtype:          sub.Subtype,
+		Types:            sub.Types,
+		ShortComment: struct {
+			Author  string `bson:"author" fmt:"author"`
+			Content string `bson:"content" fmt:"content"`
+		}(sub.ShortComment),
 	}
 }

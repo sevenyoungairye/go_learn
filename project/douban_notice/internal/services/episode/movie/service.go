@@ -33,14 +33,16 @@ func New(ctx mongodb.MongoCtx, cache redisdb.RedisCacheRepo) Service {
 func (s *service) i() {
 }
 
-// todo: 定时任务设置tag.
+// 获取所有tag
 func (s *service) getAllTag() []mongodbRepo.TagInfo {
-	return tag.New(s.mongoCtx, s.cache).MovieList()
+	tagService := tag.New(s.mongoCtx, s.cache)
+	return append(tagService.MovieList(), tagService.TvList()...)
 }
 
-func (s *service) getMovieTag(tagList []mongodbRepo.TagInfo, tagName string) mongodbRepo.TagInfo {
+// 筛选tag.
+func (s *service) getTag(tagList []mongodbRepo.TagInfo, tagName string, tagType string) mongodbRepo.TagInfo {
 	for _, item := range tagList {
-		if tagName == item.TagName {
+		if tagName == item.TagName && tagType == item.TagType {
 			return item
 		}
 	}

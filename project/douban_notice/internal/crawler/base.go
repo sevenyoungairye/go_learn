@@ -17,6 +17,21 @@ func init() {
 	douBanConfig = yaml.GetDouBan()
 }
 
+// GetSubject 获取更多剧集明细信息
+func (param *DouBanRequest) GetSubject(id string) *Subject {
+	return getSub(id)
+}
+
+func GetSubject(id string) *Subject {
+	return getSub(id)
+}
+func getSub(id string) *Subject {
+	json := httpclient.HttpWithGet(fmt.Sprintf(douBanConfig.DouBan.SubjectAbstractUrl, id), nil)
+	sa := SubjectAbstract{}
+	serial.Json2Instant(json, &sa)
+	return &sa.Subject
+}
+
 func GetMovieTag() *Tag {
 	retVal := Tag{}
 	data := httpclient.HttpWithGet(douBanConfig.DouBan.Tag.Movie, nil)

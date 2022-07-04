@@ -55,42 +55,42 @@ type EpisodeInfo struct {
 
 func (m *EpisodeInfo) SaveOrUpd(ctx *mongodb.MongoCtx) {
 	var info *EpisodeInfo
-	_ = ctx.Collection.FindOne(ctx.TODO, bson.D{{"db_id", m.DbId}}).Decode(&info)
+	_ = ctx.Collection.FindOne(ctx.TODO, bson.D{{Key: "db_id", Value: m.DbId}}).Decode(&info)
 	if info != nil {
 		// upd
 		filter := bson.D{{"db_id", m.DbId}}
 		tagList := append(info.TagList, m.TagList...)
 		update := bson.D{{
-			"$set", bson.D{
-				{"tag_type", m.TagType},
-				{"tag_list", distinct(tagList)},
-				{"title", m.Title},
-				{"url", m.Url},
-				{"cover", m.Cover},
-				{"rate", m.Rate},
-				{"is_new", m.IsNew},
-				{"playable", m.Playable},
-				{"cover_x", m.CoverX},
-				{"cover_y", m.CoverY},
-				{"episodes_info", m.EpisodesInfo},
-				{"torrent", m.Torrent},
-				{"driver_url", m.DriverUrl},
+			Key: "$set", Value: bson.D{
+				{Key: "tag_type", Value: m.TagType},
+				{Key: "tag_list", Value: distinct(tagList)},
+				{Key: "title", Value: m.Title},
+				{Key: "url", Value: m.Url},
+				{Key: "cover", Value: m.Cover},
+				{Key: "rate", Value: m.Rate},
+				{Key: "is_new", Value: m.IsNew},
+				{Key: "playable", Value: m.Playable},
+				{Key: "cover_x", Value: m.CoverX},
+				{Key: "cover_y", Value: m.CoverY},
+				{Key: "episodes_info", Value: m.EpisodesInfo},
+				{Key: "torrent", Value: m.Torrent},
+				{Key: "driver_url", Value: m.DriverUrl},
 				// subject
-				{"actors", m.Actors},
-				{"blacklisted", m.Blacklisted},
-				{"collection_status", m.CollectionStatus},
-				{"directors", m.Directors},
-				{"duration", m.Duration},
-				{"episodes_count", m.EpisodesCount},
-				{"is_tv", m.IsTv},
-				{"region", m.Region},
-				{"release_year", m.ReleaseYear},
-				{"star", m.Star},
-				{"subtype", m.Subtype},
-				{"types", m.Types},
-				{"short_comment", m.ShortComment},
-				{"updater", m.Updater},
-				{"update_time", m.UpdateTime},
+				{Key: "actors", Value: m.Actors},
+				{Key: "blacklisted", Value: m.Blacklisted},
+				{Key: "collection_status", Value: m.CollectionStatus},
+				{Key: "directors", Value: m.Directors},
+				{Key: "duration", Value: m.Duration},
+				{Key: "episodes_count", Value: m.EpisodesCount},
+				{Key: "is_tv", Value: m.IsTv},
+				{Key: "region", Value: m.Region},
+				{Key: "release_year", Value: m.ReleaseYear},
+				{Key: "star", Value: m.Star},
+				{Key: "subtype", Value: m.Subtype},
+				{Key: "types", Value: m.Types},
+				{Key: "short_comment", Value: m.ShortComment},
+				{Key: "updater", Value: m.Updater},
+				{Key: "update_time", Value: m.UpdateTime},
 			},
 		}}
 		_, err := ctx.Collection.UpdateOne(ctx.TODO, filter, update)

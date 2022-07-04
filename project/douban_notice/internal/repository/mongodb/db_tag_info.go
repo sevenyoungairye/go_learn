@@ -25,7 +25,7 @@ type TagInfo struct {
 }
 
 func (tagInfo *TagInfo) DeleteById(ctx mongodb.MongoCtx) error {
-	_, err := ctx.Collection.DeleteOne(ctx.TODO, bson.D{{"_id", tagInfo.Id}})
+	_, err := ctx.Collection.DeleteOne(ctx.TODO, bson.D{{Key: "_id", Value: tagInfo.Id}})
 	return err
 }
 
@@ -48,7 +48,7 @@ func (tagInfo *TagInfo) SaveOrUpdTag() {
 	collection := mongoCtx.Collection
 	var tmp *TagInfo
 
-	filter := bson.D{{"tag_type", tagInfo.TagType}, {"tag_name", tagInfo.TagName}}
+	filter := bson.D{{Key: "tag_type", Value: tagInfo.TagType}, {Key: "tag_name", Value: tagInfo.TagName}}
 	_ = collection.FindOne(mongoCtx.TODO, filter).Decode(&tmp)
 
 	logger.Info(fmt.Sprintf("get one: %s", serial.Object2Json(tmp)))
@@ -76,12 +76,12 @@ func (tagInfo *TagInfo) SaveOrUpdTag() {
 
 func buildUpdData(tagInfo *TagInfo) bson.D {
 	return bson.D{
-		{"$set",
-			bson.D{
-				{"tag_type", tagInfo.TagType},
-				{"tag_name", tagInfo.TagName},
-				{"updater", tagInfo.Updater},
-				{"update_time", tagInfo.UpdateTime},
+		{Key: "$set",
+			Value: bson.D{
+				{Key: "tag_type", Value: tagInfo.TagType},
+				{Key: "tag_name", Value: tagInfo.TagName},
+				{Key: "updater", Value: tagInfo.Updater},
+				{Key: "update_time", Value: tagInfo.UpdateTime},
 			},
 		},
 	}
@@ -91,7 +91,7 @@ func (tagInfo *TagInfo) GetAll(tagType string) []TagInfo {
 	mongoCtx := mongodb.GetCtxCollection(lelDbTagInfo)
 	filter := bson.D{}
 	if tagType != "" {
-		filter = bson.D{{"tag_type", tagType}}
+		filter = bson.D{{Key: "tag_type", Value: tagType}}
 	}
 	data, err := mongoCtx.Collection.Find(mongoCtx.TODO, filter)
 	if err != nil {

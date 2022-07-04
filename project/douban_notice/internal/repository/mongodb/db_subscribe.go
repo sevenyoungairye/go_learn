@@ -26,7 +26,7 @@ type Subscribe struct {
 
 func (s *Subscribe) GetList(tagType string) []Subscribe {
 	mongoCtx := mongodb.GetCtxCollection(lelDbSubscribe)
-	data, err := mongoCtx.Collection.Find(mongoCtx.Context, bson.D{{"sub_tag_type", tagType}})
+	data, err := mongoCtx.Collection.Find(mongoCtx.Context, bson.D{{Key: "sub_tag_type", Value: tagType}})
 	if err != nil {
 		return make([]Subscribe, 0)
 	}

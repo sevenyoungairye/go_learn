@@ -8,29 +8,29 @@ type SubjectAbstract struct {
 }
 
 type Subject struct {
-	Actors           []string     `bson:"actors" fmt:"actors"`
-	Blacklisted      string       `bson:"blacklisted" fmt:"blacklisted"`
-	CollectionStatus string       `bson:"collection_status" fmt:"collection_status"`
-	Directors        []string     `bson:"directors" fmt:"directors"`
-	Duration         string       `bson:"duration" fmt:"duration"`
-	EpisodesCount    string       `bson:"episodes_count" fmt:"episodes_count"`
-	ID               string       `fmt:"id"`
-	IsTv             bool         `bson:"is_tv" fmt:"is_tv"`
-	Playable         bool         `bson:"playable" fmt:"playable"`
-	Rate             string       `bson:"rate" fmt:"rate"`
-	Region           string       `bson:"region" fmt:"region"`
-	ReleaseYear      string       `bson:"release_year" fmt:"release_year"`
-	ShortComment     ShortComment `bson:"short_comment" fmt:"short_comment"`
-	Star             int          `bson:"star" fmt:"star"`
-	Subtype          string       `bson:"subtype" fmt:"subtype"`
-	Title            string       `bson:"title" fmt:"title"`
-	Types            []string     `bson:"types" fmt:"types"`
-	URL              string       `fmt:"url"`
+	Actors           []string     `json:"actors" fmt:"actors"`
+	Blacklisted      string       `json:"blacklisted" fmt:"blacklisted"`
+	CollectionStatus string       `json:"collection_status" fmt:"collection_status"`
+	Directors        []string     `json:"directors" fmt:"directors"`
+	Duration         string       `json:"duration" fmt:"duration"`
+	EpisodesCount    string       `json:"episodes_count" fmt:"episodes_count"`
+	ID               string       `json:"id" fmt:"id"`
+	IsTv             bool         `json:"is_tv" fmt:"is_tv"`
+	Playable         bool         `json:"playable" fmt:"playable"`
+	Rate             string       `json:"rate" fmt:"rate"`
+	Region           string       `json:"region" fmt:"region"`
+	ReleaseYear      string       `json:"release_year" fmt:"release_year"`
+	ShortComment     ShortComment `json:"short_comment" fmt:"short_comment"`
+	Star             int          `json:"star" fmt:"star"`
+	Subtype          string       `json:"subtype" fmt:"subtype"`
+	Title            string       `json:"title" fmt:"title"`
+	Types            []string     `json:"types" fmt:"types"`
+	URL              string       `json:"url" fmt:"url"`
 }
 
 type ShortComment struct {
-	Author  string `fmt:"author"`
-	Content string `fmt:"content"`
+	Author  string `json:"author" fmt:"author"`
+	Content string `json:"content" fmt:"content"`
 }
 
 type Episode struct {

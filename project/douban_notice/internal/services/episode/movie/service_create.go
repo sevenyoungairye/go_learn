@@ -16,8 +16,7 @@ type InfoCreateVo struct {
 	Sort      string `json:"sort"`
 }
 
-// RestSave 后台rest 接口保存数据用
-func (s *service) RestSave(param InfoCreateVo) {
+func (s *service) RestSaveTv(param InfoCreateVo) {
 	allTag := s.getAllTag()
 	request := crawler.DouBanRequest{
 		Tag:       param.Tag,
@@ -25,7 +24,61 @@ func (s *service) RestSave(param InfoCreateVo) {
 		PageStart: fmt.Sprint(param.PageStart),
 		PageLimit: fmt.Sprint(param.PageLimit),
 	}
-	data := getMovieData(request.GetCustomMovie().Subjects)
+
+	// 保存tv
+	var tv = request.GetTv()
+	for _, item := range getEpisodeData(tv.Subjects) {
+		item.TagType = episode.Tv
+		tag := s.getTag(allTag, request.Tag, item.TagType)
+		item.TagList = append(make([]mongodb.TagInfo, 0), tag)
+		item.SaveOrUpd(&s.mongoCtx)
+	}
+}
+
+func (s *service) SaveRmdTv() {
+	s.saveTv(episode.Rmd)
+}
+
+func (s *service) SaveRankTv() {
+	s.saveTv(episode.Rank)
+}
+
+func (s *service) saveTv(flg int) {
+	allTag := s.getAllTag()
+	for pageNo := 1; pageNo <= episode.TotalPage; pageNo++ {
+		pageStart, pageLimit := episode.ComputePageData(pageNo)
+		request := crawler.DouBanRequest{
+			PageStart: fmt.Sprint(pageStart),
+			PageLimit: fmt.Sprint(pageLimit),
+		}
+
+		// 保存tv
+		var tv = crawler.BaseSubject{}
+		if flg == episode.Rmd {
+			tv = request.GetRmdTv()
+		}
+		if flg == episode.Rank {
+			tv = request.GetRankTv()
+		}
+		for _, item := range getEpisodeData(tv.Subjects) {
+			item.TagType = episode.Tv
+			tag := s.getTag(allTag, request.Tag, item.TagType)
+			item.TagList = append(make([]mongodb.TagInfo, 0), tag)
+			item.SaveOrUpd(&s.mongoCtx)
+		}
+	}
+}
+
+// RestSaveMovie 后台rest 接口保存数据用
+func (s *service) RestSaveMovie(param InfoCreateVo) {
+	allTag := s.getAllTag()
+	request := crawler.DouBanRequest{
+		Tag:       param.Tag,
+		Sort:      param.Sort,
+		PageStart: fmt.Sprint(param.PageStart),
+		PageLimit: fmt.Sprint(param.PageLimit),
+	}
+	data := getEpisodeData(request.GetCustomMovie().Subjects)
 	for _, item := range data {
 		item.TagType = episode.Movie
 		tag := s.getTag(allTag, request.Tag, item.TagType)
@@ -66,7 +119,7 @@ func (s *service) saveMovie(flg int) {
 		if episode.Rmd == flg {
 			movie = request.GetRmdMovie()
 		}
-		for _, item := range getMovieData(movie.Subjects) {
+		for _, item := range getEpisodeData(movie.Subjects) {
 			item.TagType = episode.Movie
 			tag := s.getTag(allTag, request.Tag, item.TagType)
 			item.TagList = append(make([]mongodb.TagInfo, 0), tag)
@@ -75,7 +128,7 @@ func (s *service) saveMovie(flg int) {
 	}
 }
 
-func getMovieData(episodeList []crawler.Episode) []mongodb.EpisodeInfo {
+func getEpisodeData(episodeList []crawler.Episode) []mongodb.EpisodeInfo {
 	data := make([]mongodb.EpisodeInfo, 0)
 	for _, item := range episodeList {
 		data = append(data, convert(item))

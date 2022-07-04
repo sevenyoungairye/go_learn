@@ -12,7 +12,11 @@ var _ Service = (*service)(nil)
 type Service interface {
 	i()
 
-	RestSave(param InfoCreateVo)
+	RestSaveTv(param InfoCreateVo)
+	SaveRmdTv()
+	SaveRankTv()
+
+	RestSaveMovie(param InfoCreateVo)
 	SaveLastMovie()
 	SaveRmdMovie()
 	SaveRankMovie()

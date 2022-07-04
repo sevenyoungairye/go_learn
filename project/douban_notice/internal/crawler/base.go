@@ -6,6 +6,7 @@ package crawler
 
 import (
 	"fmt"
+	"strings"
 	"top.lel.dn/main/pkg/httpclient"
 	"top.lel.dn/main/pkg/serial"
 	"top.lel.dn/main/pkg/yaml"
@@ -57,6 +58,42 @@ type DouBanRequest struct {
 	PageStart string
 }
 
+// GetRankTv 好评热门
+func (param *DouBanRequest) GetRankTv() BaseSubject {
+	param.Tag = "热门"
+	param.Sort = "rank"
+	return param.GetTv()
+}
+
+// GetRmdTv 推荐热门
+func (param *DouBanRequest) GetRmdTv() BaseSubject {
+	param.Tag = "热门"
+	param.Sort = "recommend"
+	return param.GetTv()
+}
+
+// GetTv 根据tag获取电视剧
+func (param *DouBanRequest) GetTv() BaseSubject {
+	if param.Tag == "" {
+		return BaseSubject{}
+	}
+	return getEpisodeData(param.getTvUrl())
+}
+
+func (param *DouBanRequest) getTvUrl() string {
+	if param.PageStart == "" {
+		param.PageStart = "0"
+	}
+	if param.PageLimit == "" {
+		param.PageLimit = "20"
+	}
+	if param.Sort == "" {
+		// 替换sort.
+		return fmt.Sprintf(strings.ReplaceAll(douBanConfig.DouBan.Tv.Url, "&sort=%s", ""), param.Tag, param.PageLimit, param.PageStart)
+	}
+	return fmt.Sprintf(douBanConfig.DouBan.Tv.Url, param.Tag, param.Sort, param.PageLimit, param.PageStart)
+}
+
 func (param *DouBanRequest) getMovieUrl() string {
 	if param.PageStart == "" {
 		param.PageStart = "0"
@@ -64,10 +101,13 @@ func (param *DouBanRequest) getMovieUrl() string {
 	if param.PageLimit == "" {
 		param.PageLimit = "20"
 	}
+	if param.Sort == "" {
+		return fmt.Sprintf(strings.ReplaceAll(douBanConfig.DouBan.Movie.Url, "&sort=%s", ""), param.Tag, param.PageLimit, param.PageStart)
+	}
 	return fmt.Sprintf(douBanConfig.DouBan.Movie.Url, param.Tag, param.Sort, param.PageLimit, param.PageStart)
 }
 
-func getMovieData(url string) BaseSubject {
+func getEpisodeData(url string) BaseSubject {
 	json := httpclient.HttpWithGet(url, nil)
 	subs := BaseSubject{}
 	serial.Json2Instant(json, &subs)
@@ -79,33 +119,32 @@ func (param *DouBanRequest) GetLastMovie() BaseSubject {
 	param.Tag = "最新"
 	param.Sort = "time"
 
-	return getMovieData(param.getMovieUrl())
+	return getEpisodeData(param.getMovieUrl())
 }
 
 // GetRmdMovie 获取热门
 func (param *DouBanRequest) GetRmdMovie() BaseSubject {
 	param.Tag = "热门"
 	param.Sort = "recommend"
-	return getMovieData(param.getMovieUrl())
+	return getEpisodeData(param.getMovieUrl())
 }
 
 // GetRankMovie 获取口碑 搞评价电影
 func (param *DouBanRequest) GetRankMovie() BaseSubject {
 	param.Tag = "热门"
 	param.Sort = "rank"
-	return getMovieData(param.getMovieUrl())
+	return getEpisodeData(param.getMovieUrl())
 }
 
 // GetMovie 根据标签获取电影
-func (param *DouBanRequest) GetMovie(tagType string) BaseSubject {
-	if "" == tagType {
+func (param *DouBanRequest) GetMovie() BaseSubject {
+	if "" == param.Tag {
 		return BaseSubject{}
 	}
-	param.Tag = tagType
-	return getMovieData(param.getMovieUrl())
+	return getEpisodeData(param.getMovieUrl())
 }
 
 // GetCustomMovie 自定义参数...
 func (param *DouBanRequest) GetCustomMovie() BaseSubject {
-	return getMovieData(param.getMovieUrl())
+	return getEpisodeData(param.getMovieUrl())
 }

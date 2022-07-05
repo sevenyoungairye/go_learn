@@ -48,9 +48,9 @@ func CrawlerMovie(c *cron.Cron) {
 		start := time.Now().UnixMilli()
 		logger.Info("抓取电影定时任务开始, ")
 
-		for _, item := range tag.New(*ctx, *redisdb.New()).TvList() {
+		for _, item := range tag.New(*ctx, *redisdb.New()).MovieList() {
 			count := 0
-			for pageNo := 0; pageNo < MoviePage; pageNo++ {
+			for pageNo := 1; pageNo < MoviePage; pageNo++ {
 				start, limit := episode.ComputePageData(pageNo)
 				service.RestSaveMovie(movie.InfoCreateVo{
 					PageStart: start,
@@ -58,7 +58,8 @@ func CrawlerMovie(c *cron.Cron) {
 					Tag:       item.TagName,
 					Sort:      "",
 				})
-				count += 20
+				count += episode.PageLimit
+				time.Sleep(time.Second * 2)
 			}
 			logger.Info(fmt.Sprintf("抓取movie完成, tagName: %s, 共计%d个", item.TagName, count))
 			count = 0
@@ -91,7 +92,7 @@ func CrawlerTv(c *cron.Cron) {
 		logger.Info("抓取tv定时任务开始, ")
 		for _, item := range tag.New(*ctx, *redisdb.New()).TvList() {
 			count := 0
-			for pageNo := 0; pageNo < TvPage; pageNo++ {
+			for pageNo := 1; pageNo < TvPage; pageNo++ {
 				start, limit := episode.ComputePageData(pageNo)
 				service.RestSaveTv(movie.InfoCreateVo{
 					PageStart: start,
@@ -100,6 +101,7 @@ func CrawlerTv(c *cron.Cron) {
 					Sort:      "",
 				})
 				count += episode.PageLimit
+				time.Sleep(time.Second * 2)
 			}
 			logger.Info(fmt.Sprintf("抓取tv完成, tagName: %s, 共计%d个", item.TagName, count))
 			count = 0

@@ -42,7 +42,7 @@ func CrawlerMovie(c *cron.Cron) {
 		logger.Warn("the corn is nil!")
 		return
 	}
-	id, err := c.AddFunc("30 22 * * *", func() {
+	id, err := c.AddFunc("42 22 * * *", func() {
 		ctx := mongodb.GetCtxCollection(mongodbRepo.MovieInfoCollect)
 		service := movie.New(*ctx, *redisdb.New())
 		start := time.Now().UnixMilli()

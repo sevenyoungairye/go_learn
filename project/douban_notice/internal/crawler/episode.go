@@ -59,7 +59,7 @@ type BaseSubject struct {
 func (e *Episode) GetPublicDate() *time.Time {
 	// https://movie.douban.com/subject/35558660/
 	dateStr := httpclient.GetDateByAttrSelector(e.URL, "span[property=\"v:initialReleaseDate\"]")
-	dateValue, _ := time.Parse("20060102", dateStr) // convert 'String' to 'Time' data type
+	dateValue, _ := time.Parse("2006-01-02", dateStr) // convert 'String' to 'Time' data type
 	return &dateValue
 }
 

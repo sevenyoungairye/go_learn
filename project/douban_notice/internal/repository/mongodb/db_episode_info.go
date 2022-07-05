@@ -58,7 +58,7 @@ func (m *EpisodeInfo) SaveOrUpd(ctx *mongodb.MongoCtx) {
 	_ = ctx.Collection.FindOne(ctx.TODO, bson.D{{Key: "db_id", Value: m.DbId}}).Decode(&info)
 	if info != nil {
 		// upd
-		filter := bson.D{{Key: "db_id", Value: m.DbId}}
+		filter := bson.D{{Key: "db_id", Value: info.DbId}}
 		tagList := append(info.TagList, m.TagList...)
 		update := bson.D{{
 			Key: "$set", Value: bson.D{

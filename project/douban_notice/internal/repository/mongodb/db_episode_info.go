@@ -75,6 +75,7 @@ func (m *EpisodeInfo) SaveOrUpd(ctx *mongodb.MongoCtx) {
 				{Key: "episodes_info", Value: m.EpisodesInfo},
 				{Key: "torrent", Value: m.Torrent},
 				{Key: "driver_url", Value: m.DriverUrl},
+				{Key: "public_date", Value: m.PublicDate},
 				// subject
 				{Key: "actors", Value: m.Actors},
 				{Key: "blacklisted", Value: m.Blacklisted},

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"math/rand"
+	"regexp"
 	"time"
 	"top.lel.dn/main/pkg/logger"
 )
@@ -36,6 +37,27 @@ func GetRandomUA() string {
 	// [0 - arrLen)
 	i := rand.Intn(arrLen)
 	return Headers[AgentArr[i]]
+}
+
+func GetDateByAttrSelector(url, htmlSelector string) string {
+	res := ""
+
+	request := initRequest(nil)
+
+	// E[foo="bar"]
+	// span[property="v:initialReleaseDate"]
+	// 2022-06-10(韩国)
+	request.OnHTML(htmlSelector, func(e *colly.HTMLElement) {
+		re := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
+		res = re.FindString(e.Text)
+	})
+	// get json... then use regexp match
+	//request.OnHTML("script[type=\"application/ld+json\"]", func(e *colly.HTMLElement) {
+	//})
+
+	_ = request.Visit(url)
+
+	return res
 }
 
 // HttpWithGet get way

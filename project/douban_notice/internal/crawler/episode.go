@@ -1,5 +1,10 @@
 package crawler
 
+import (
+	"time"
+	"top.lel.dn/main/pkg/httpclient"
+)
+
 // SubjectAbstract 豆瓣剧集信息异步接口
 // https://movie.douban.com/j/subject_abstract?subject_id=35235813
 type SubjectAbstract struct {
@@ -48,6 +53,14 @@ type Episode struct {
 
 type BaseSubject struct {
 	Subjects []Episode `json:"subjects" fmt:"subjects"`
+}
+
+// GetPublicDate 获取剧集上映日期
+func (e *Episode) GetPublicDate() *time.Time {
+	// https://movie.douban.com/subject/35558660/
+	dateStr := httpclient.GetDateByAttrSelector(e.URL, "span[property=\"v:initialReleaseDate\"]")
+	dateValue, _ := time.Parse("20060102", dateStr) // convert 'String' to 'Time' data type
+	return &dateValue
 }
 
 /*

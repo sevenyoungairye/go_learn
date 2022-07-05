@@ -150,7 +150,7 @@ func convert(item crawler.Episode) mongodb.EpisodeInfo {
 		CoverX:           int(item.CoverX),
 		CoverY:           int(item.CoverY),
 		EpisodesInfo:     item.EpisodesInfo,
-		PublicDate:       nil,
+		PublicDate:       item.GetPublicDate(),
 		Torrent:          "",
 		DriverUrl:        "",
 		Created:          time.Now(),

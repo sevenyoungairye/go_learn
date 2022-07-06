@@ -12,7 +12,10 @@ import (
 
 func main() {
 
-	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
+	r.Use(gin.Logger())
+	_ = r.SetTrustedProxies([]string{"127.0.0.1"})
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",

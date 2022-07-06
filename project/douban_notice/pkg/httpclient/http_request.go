@@ -79,6 +79,7 @@ func HttpWithGet(URL string, headers map[string]string) string {
 	err := c.Visit(URL)
 	if err != nil {
 		logger.Warn(fmt.Sprintf("http get invoke error, req url: %s, err: %s", URL, err))
+		panic("oops!, shutdown, the website limited.")
 	}
 	return retStr
 }

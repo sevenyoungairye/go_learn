@@ -137,6 +137,7 @@ func getEpisodeData(episodeList []crawler.Episode) []mongodb.EpisodeInfo {
 }
 
 func convert(item crawler.Episode) mongodb.EpisodeInfo {
+	time.Sleep(time.Second * 1)
 	sub := crawler.GetSubject(item.ID)
 	return mongodb.EpisodeInfo{
 		Id:               db.GenID(),

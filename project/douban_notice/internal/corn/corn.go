@@ -26,14 +26,19 @@ const (
 	MoviePage = 2000
 )
 
+const (
+	HomeMovieCorn = "30 22 * * *"
+	HomeTvCorn    = "40 22 * * *"
+)
+
 func init() {
 
 	c := cron.New()
 	SaveHomeMovie(c)
 	SaveHomeTv(c)
 
-	CrawlerTv(c)
-	CrawlerMovie(c)
+	// CrawlerTv(c)
+	// CrawlerMovie(c)
 }
 
 // CrawlerMovie 抓取指定标签movie数据, 每个标签2000页
@@ -125,7 +130,7 @@ func SaveHomeMovie(c *cron.Cron) {
 		logger.Warn("the corn is nil!")
 		return
 	}
-	id, err := c.AddFunc("55 20 * * *", func() {
+	id, err := c.AddFunc(HomeMovieCorn, func() {
 		ctx := mongodb.GetCtxCollection(mongodbRepo.MovieInfoCollect)
 		service := movie.New(*ctx, *redisdb.New())
 		start := time.Now().UnixMilli()
@@ -152,7 +157,7 @@ func SaveHomeTv(c *cron.Cron) {
 		logger.Warn("the corn is nil!")
 		return
 	}
-	id, err := c.AddFunc("20 21 * * *", func() {
+	id, err := c.AddFunc(HomeTvCorn, func() {
 		ctx := mongodb.GetCtxCollection(mongodbRepo.MovieInfoCollect)
 		service := movie.New(*ctx, *redisdb.New())
 		start := time.Now().UnixMilli()

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"math/rand"
+	"net/http"
 	"regexp"
 	"time"
 	"top.lel.dn/main/pkg/logger"
@@ -67,6 +68,12 @@ func HttpWithGet(URL string, headers map[string]string) string {
 	var retStr = ""
 
 	c := initRequest(headers)
+	// set a douBan cookie...
+	cookies := []*http.Cookie{
+		{Name: "__gpi", Value: "UID=0000076c07e06eda:T=1657114599:RT=1657172812:S=ALNI_MZ6FZodGMxgEGNwlGjHKaljwetfMw"},
+		{Name: "dbcl2", Value: "194925495:tr4/vFAmmNQ"},
+	}
+	_ = c.SetCookies(URL, cookies)
 
 	c.OnResponse(func(resp *colly.Response) {
 

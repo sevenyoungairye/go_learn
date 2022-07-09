@@ -141,6 +141,7 @@ func GetMongodb() *M {
 		m.Mongodb.Password = "admin"
 		m.Mongodb.Host = "127.0.0.1"
 		m.Mongodb.Port = "27017"
+		m.Mongodb.Uri = fmt.Sprintf("mongodb://%s:%s@%s:%s", m.Mongodb.Username, m.Mongodb.Password, m.Mongodb.Host, m.Mongodb.Password)
 	}
 	return &m
 }

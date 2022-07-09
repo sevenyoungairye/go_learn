@@ -3,14 +3,16 @@ package yaml
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"log"
 	"strings"
+	"top.lel.dn/main/configs"
 )
 
 // ConfigYaml app config location
+// if using ioUtil read config. ConfigYaml is `configs/application.yaml`
+// if using go embed, using the config file name!
 const (
-	ConfigYaml = "configs/application.yaml"
+	ConfigYaml = "application.yaml"
 )
 
 // application config
@@ -19,11 +21,24 @@ var (
 )
 
 func init() {
-	fileByte, err := ioutil.ReadFile(ConfigYaml)
+	fileByte, err := configs.Config.ReadFile(ConfigYaml)
 	if err != nil {
-		log.Fatalln("load application config file error!")
+		log.Fatalln("load application config file error!", err)
 	}
 	configData = fileByte
+}
+
+type P struct {
+	Proxy struct {
+		ReqUrl string `yaml:"reqUrl" json:"reqUrl"`
+	} `yaml:"proxy" json:"proxy"`
+}
+
+// GetProxyCfg get a rest proxy for request ip.
+func GetProxyCfg() *P {
+	p := P{}
+	_ = yaml.Unmarshal(configData, &p)
+	return &p
 }
 
 // D crawler obj

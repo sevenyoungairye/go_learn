@@ -31,3 +31,7 @@ DouBan:
     url: https://movie.douban.com/j/search_subjects?type=movie&tag=%s&sort=%s&page_limit=%s&page_start=%s
   tv:
     url: https://movie.douban.com/j/search_subjects?type=tv&tag=%s&sort=%s&page_limit=%s&page_start=%s
+
+# get proxy ip request url.
+proxy:
+  reqUrl: http://47.99.161.195:5010/get/

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 	"top.lel.dn/main/pkg/logger"
 )
@@ -40,23 +41,46 @@ func GetRandomUA() string {
 	return Headers[AgentArr[i]]
 }
 
+// SetCookie 设置cookie...
+func SetCookie(url string, c *colly.Collector) {
+	if strings.Contains(url, `douban.com`) {
+		cookies := []*http.Cookie{
+			{Name: "__gpi", Value: "UID=00000783b79867e1:T=1657356561:RT=1657462665:S=ALNI_MZS5Rwz_FdTqsn2ea90x5fOLimVAg"},
+			{Name: "dbcl2", Value: "194925495:M+LSeBuoG2E"},
+		}
+		_ = c.SetCookies(url, cookies)
+	}
+}
+
 func GetDateByAttrSelector(url, htmlSelector string) string {
 	res := ""
 
 	request := initRequest(nil)
 
+	SetCookie(url, request)
 	// E[foo="bar"]
 	// span[property="v:initialReleaseDate"]
 	// 2022-06-10(韩国)
 	request.OnHTML(htmlSelector, func(e *colly.HTMLElement) {
 		re := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 		res = re.FindString(e.Text)
+		if !re.MatchString(e.Text) {
+			re = regexp.MustCompile(`\d{4}-\d{2}`)
+			res = re.FindString(e.Text)
+		}
+		if !re.MatchString(e.Text) {
+			re = regexp.MustCompile(`\d{4}`)
+			res = re.FindString(e.Text)
+		}
 	})
 	// get json... then use regexp match
 	//request.OnHTML("script[type=\"application/ld+json\"]", func(e *colly.HTMLElement) {
 	//})
 
-	_ = request.Visit(url)
+	err := request.Visit(url)
+	if err != nil {
+		logger.Warn(fmt.Sprintf("get public date err: %v", err))
+	}
 
 	return res
 }
@@ -68,12 +92,8 @@ func HttpWithGet(URL string, headers map[string]string) string {
 	var retStr = ""
 
 	c := initRequest(headers)
-	// set a douBan cookie...
-	cookies := []*http.Cookie{
-		{Name: "__gpi", Value: "UID=0000076c07e06eda:T=1657114599:RT=1657172812:S=ALNI_MZ6FZodGMxgEGNwlGjHKaljwetfMw"},
-		{Name: "dbcl2", Value: "194925495:tr4/vFAmmNQ"},
-	}
-	_ = c.SetCookies(URL, cookies)
+	// set a cookie...
+	SetCookie(URL, c)
 
 	c.OnResponse(func(resp *colly.Response) {
 

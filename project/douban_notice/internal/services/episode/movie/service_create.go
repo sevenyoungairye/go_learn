@@ -131,13 +131,14 @@ func (s *service) saveMovie(flg int) {
 func getEpisodeData(episodeList []crawler.Episode) []mongodb.EpisodeInfo {
 	data := make([]mongodb.EpisodeInfo, 0)
 	for _, item := range episodeList {
+		time.Sleep(time.Second * 1)
 		data = append(data, convert(item))
 	}
 	return data
 }
 
 func convert(item crawler.Episode) mongodb.EpisodeInfo {
-	time.Sleep(time.Second * 1)
+
 	sub := crawler.GetSubject(item.ID)
 	return mongodb.EpisodeInfo{
 		Id:               db.GenID(),

@@ -5,6 +5,7 @@ import (
 	"time"
 	"top.lel.dn/main/internal/crawler"
 	"top.lel.dn/main/internal/repository/mongodb"
+	"top.lel.dn/main/internal/services/episode"
 	"top.lel.dn/main/pkg/db"
 	"top.lel.dn/main/pkg/logger"
 )
@@ -12,8 +13,8 @@ import (
 var paramMap map[string]string
 
 const (
-	movie = "movie"
-	tv    = "tv"
+	movie = episode.Movie
+	tv    = episode.Tv
 )
 
 func init() {

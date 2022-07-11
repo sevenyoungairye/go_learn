@@ -3,7 +3,9 @@ package mongodb
 import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
+	"top.lel.dn/main/pkg/component/pageable"
 	"top.lel.dn/main/pkg/db/mongodb"
 	"top.lel.dn/main/pkg/logger"
 )
@@ -53,6 +55,50 @@ type EpisodeInfo struct {
 	UpdateTime time.Time `bson:"update_time"`
 }
 
+// PageList pageable.
+// https://www.mongodb.com/docs/manual/reference/method/cursor.skip/#pagination-example
+func (m *EpisodeInfo) PageList(ctx *mongodb.MongoCtx, page pageable.PageVo) ([]EpisodeInfo, int64) {
+
+	filter := make([]bson.E, 0)
+	//if m.PublicDate != nil {
+	filter = append(filter, bson.E{Key: "public_date", Value: m.PublicDate})
+	//}
+
+	limit := int64(page.PageLimit)
+	skip := int64(0)
+	if page.PageNo > 0 {
+		skip = int64(page.PageNo-1) * limit
+	} else {
+		skip = 0
+	}
+	var opts = options.FindOptions{
+		Limit: &limit,
+		Skip:  &skip,
+		Sort:  bson.D{{Key: "created", Value: -1}},
+	}
+	total, _ := ctx.Collection.CountDocuments(ctx.TODO, filter)
+	cursor, err := ctx.Collection.Find(ctx.TODO, filter, &opts)
+	if err != nil {
+		logger.Warn(fmt.Sprintln(err))
+	}
+
+	var res = make([]EpisodeInfo, 0)
+	for cursor.TryNext(ctx.TODO) {
+		item := EpisodeInfo{}
+		_ = cursor.Decode(&item)
+		res = append(res, item)
+	}
+
+	return res, total
+}
+
+// GetOne get data by douban id.
+func (m *EpisodeInfo) GetOne(ctx *mongodb.MongoCtx) *EpisodeInfo {
+	var info *EpisodeInfo
+	_ = ctx.Collection.FindOne(ctx.TODO, bson.D{{Key: "db_id", Value: m.DbId}}).Decode(&info)
+	return info
+}
+
 func (m *EpisodeInfo) SaveOrUpd(ctx *mongodb.MongoCtx) {
 	var info *EpisodeInfo
 	_ = ctx.Collection.FindOne(ctx.TODO, bson.D{{Key: "db_id", Value: m.DbId}}).Decode(&info)
@@ -60,6 +106,9 @@ func (m *EpisodeInfo) SaveOrUpd(ctx *mongodb.MongoCtx) {
 		// upd
 		filter := bson.D{{Key: "db_id", Value: info.DbId}}
 		tagList := append(info.TagList, m.TagList...)
+		if m.PublicDate == nil {
+			m.PublicDate = info.PublicDate
+		}
 		update := bson.D{{
 			Key: "$set", Value: bson.D{
 				{Key: "tag_type", Value: m.TagType},

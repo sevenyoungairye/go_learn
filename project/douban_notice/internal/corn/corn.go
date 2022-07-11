@@ -26,9 +26,20 @@ const (
 	MoviePage = 2000
 )
 
+// 周天10:30 -> 30 10 * * 0
+// 周六10:30 -> 30 10 * * 6
 const (
-	HomeMovieCorn = "30 22 * * *"
-	HomeTvCorn    = "40 22 * * *"
+	// CrawlerMovieCorn 每月15号晚6点
+	CrawlerMovieCorn = "00 18 15 * ?"
+
+	// CrawlerTvCorn 每月15号早上8点
+	CrawlerTvCorn = "00 08 15 * ?"
+
+	// HomeMovieCorn 每周天上午10点半
+	HomeMovieCorn = "30 10 * * 0"
+
+	// HomeTvCorn 每周天上午10点
+	HomeTvCorn = "00 10 * * 0"
 )
 
 func init() {
@@ -47,7 +58,7 @@ func CrawlerMovie(c *cron.Cron) {
 		logger.Warn("the corn is nil!")
 		return
 	}
-	id, err := c.AddFunc("42 22 * * *", func() {
+	id, err := c.AddFunc(CrawlerMovieCorn, func() {
 		ctx := mongodb.GetCtxCollection(mongodbRepo.MovieInfoCollect)
 		service := movie.New(*ctx, *redisdb.New())
 		start := time.Now().UnixMilli()
@@ -90,7 +101,7 @@ func CrawlerTv(c *cron.Cron) {
 		return
 	}
 
-	id, err := c.AddFunc("30 21 * * *", func() {
+	id, err := c.AddFunc(CrawlerTvCorn, func() {
 		ctx := mongodb.GetCtxCollection(mongodbRepo.MovieInfoCollect)
 		service := movie.New(*ctx, *redisdb.New())
 		start := time.Now().UnixMilli()

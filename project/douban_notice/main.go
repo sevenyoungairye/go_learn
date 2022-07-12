@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"top.lel.dn/main/internal/corn"
-	"top.lel.dn/main/internal/services/episode"
 	"top.lel.dn/main/pkg/yaml"
 )
 
@@ -29,5 +28,4 @@ func main() {
 	}
 
 	corn.Demo()
-	episode.Run()
 }

@@ -3,6 +3,7 @@ package mongodb
 import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 	"top.lel.dn/main/pkg/component/pageable"
@@ -60,10 +61,19 @@ type EpisodeInfo struct {
 func (m *EpisodeInfo) PageList(ctx *mongodb.MongoCtx, page pageable.PageVo) ([]EpisodeInfo, int64) {
 
 	filter := make([]bson.E, 0)
-	//if m.PublicDate != nil {
-	filter = append(filter, bson.E{Key: "public_date", Value: m.PublicDate})
-	//}
+	if m.PublicDate != nil {
+		filter = append(filter, bson.E{Key: "public_date", Value: m.PublicDate})
+	}
+	if m.Title != "" {
+		// bson.D{{"item", primitive.Regex{Pattern: "^p", Options: ""}}}
+		filter = append(filter, bson.E{Key: "title", Value: primitive.Regex{Pattern: "/" + m.Title + "/"}})
+	}
 
+	return m.GetPageData(ctx, page, filter)
+}
+
+// GetPageData 根据条件获取分页数据
+func (m *EpisodeInfo) GetPageData(ctx *mongodb.MongoCtx, page pageable.PageVo, filter []bson.E) ([]EpisodeInfo, int64) {
 	limit := int64(page.PageLimit)
 	skip := int64(0)
 	if page.PageNo > 0 {

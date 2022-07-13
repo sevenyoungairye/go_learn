@@ -45,11 +45,11 @@ const (
 func init() {
 
 	c := cron.New()
-	SaveHomeMovie(c)
-	SaveHomeTv(c)
+	go SaveHomeMovie(c)
+	go SaveHomeTv(c)
 
-	// CrawlerTv(c)
-	// CrawlerMovie(c)
+	go CrawlerTv(c)
+	go CrawlerMovie(c)
 }
 
 // CrawlerMovie 抓取指定标签movie数据, 每个标签2000页
@@ -65,6 +65,9 @@ func CrawlerMovie(c *cron.Cron) {
 		logger.Info("抓取电影定时任务开始, ")
 
 		for _, item := range tag.New(*ctx, *redisdb.New()).MovieList() {
+			if "热门" == item.TagName || "最新" == item.TagName {
+				continue
+			}
 			count := 0
 			for pageNo := 1; pageNo < MoviePage; pageNo++ {
 				start, limit := episode.ComputePageData(pageNo)
@@ -107,6 +110,9 @@ func CrawlerTv(c *cron.Cron) {
 		start := time.Now().UnixMilli()
 		logger.Info("抓取tv定时任务开始, ")
 		for _, item := range tag.New(*ctx, *redisdb.New()).TvList() {
+			if "热门" == item.TagName {
+				continue
+			}
 			count := 0
 			for pageNo := 1; pageNo < TvPage; pageNo++ {
 				start, limit := episode.ComputePageData(pageNo)

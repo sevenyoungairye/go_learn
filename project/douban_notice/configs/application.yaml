@@ -14,11 +14,11 @@ redis:
 
 # mongodb config.
 mongodb:
-  uri: mongodb://root:lelMogo@47.99.161.195:27017
+  uri: mongodb://root:lelMongo@42.192.51.141:27017
   username: root
-  password: lelMogo
+  password: lelMongo
   database: lel_db_notice
-  host: 47.99.161.195
+  host: 42.192.51.141
   port: 27017
 
 # 豆瓣resource config
